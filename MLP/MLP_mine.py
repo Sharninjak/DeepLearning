@@ -5,7 +5,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
-# 定义设备!!!!
+# 定义设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("device:", device)  # device: cuda
 
@@ -32,30 +32,21 @@ images, labels = zip(*[train_dataset[i] for i in range(6)])
 print("Image shape:", images[0].shape)
 
 # 创建一个包含6个子图的网格
-# fig = plt.figure(figsize=(10, 5))
-# for i in range(6):
-#     # 在2x3的网格中添加子图
-#     ax = fig.add_subplot(2, 3, i + 1)
-#     # 关闭坐标轴
-#     ax.axis('off')
-#     # 去掉多余的维度,显示图像
-#     ax.imshow(images[i].squeeze(), cmap='gray', vmin=0, vmax=1)
-#     # 在图像上方显示标签
-#     ax.set_title(f"Label: {labels[i]}")
-# plt.show()
+fig = plt.figure(figsize=(10, 5))
+for i in range(6):
+    # 在2x3的网格中添加子图
+    ax = fig.add_subplot(2, 3, i + 1)
+    # 关闭坐标轴
+    ax.axis('off')
+    # 去掉多余的维度,显示图像
+    ax.imshow(images[i].squeeze(), cmap='gray', vmin=0, vmax=1)
+    # 在图像上方显示标签
+    ax.set_title(f"Label: {labels[i]}")
+plt.show()
 
 # 数据加载器
 train_loader = DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=1000, shuffle=False)
-
-# fig = plt.figure()
-# for i in range(6):
-#     ax = fig.add_subplot(2, 3, i+1)
-#     plt.tight_layout()
-#     img, label = train_dataset[i]
-#     ax.imshow(img.numpy(), cmap='gray')
-#     ax.set_title(str(label))
-# plt.show()
 
 
 # 多层感知机模型定义
@@ -136,66 +127,5 @@ def main_train_test():
         test(model, device, test_loader)
 
 
-# # 测试模型并收集错误的预测信息
-# def test_and_collect_errors(model, device, test_loader):
-#     model.eval()
-#     test_loss = 0
-#     correct = 0
-#     incorrect_images = []
-#     incorrect_labels = []
-#     predicted_labels = []
-#
-#     with torch.no_grad():
-#         for data, target in test_loader:
-#             data, target = data.to(device), target.to(device)
-#             output = model(data)
-#             test_loss += criterion(output, target).item()
-#             pred = output.argmax(dim=1, keepdim=True)
-#             correct += pred.eq(target.view_as(pred)).sum().item()
-#
-#             # 收集预测错误的信息
-#             wrong = ~pred.eq(target.view_as(pred))
-#             incorrect_images.extend(data[wrong].cpu())
-#             incorrect_labels.extend(target[wrong].cpu())
-#             predicted_labels.extend(pred[wrong].cpu())
-#
-#     test_loss /= len(test_loader.dataset)
-#
-#     # 输出测试结果
-#     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-#         test_loss, correct, len(test_loader.dataset),
-#         100. * correct / len(test_loader.dataset)))
-#
-#     # 返回错误的图像和标签
-#     return incorrect_images, incorrect_labels, predicted_labels
-#
-#
-# def main_train_test_error():
-#     # 主训练循环
-#     for epoch in range(1, 20):
-#         train(model, device, train_loader, optimizer, epoch)
-#
-#         # 调用新的测试函数
-#         incorrect_images, incorrect_labels, predicted_labels = test_and_collect_errors(model, device, test_loader)
-#
-#         # 可视化错误预测
-#         if incorrect_images:
-#             num_rows = len(incorrect_images) // 6 + (len(incorrect_images) % 6 > 0)
-#             fig, axes = plt.subplots(num_rows, 6, figsize=(15, 3 * num_rows))
-#             axes = axes.flatten()
-#
-#             for i, ax in enumerate(axes[:len(incorrect_images)]):
-#                 ax.imshow(incorrect_images[i].squeeze(), cmap='gray', vmin=0, vmax=1)
-#                 ax.axis('off')
-#                 ax.set_title(f"True: {incorrect_labels[i]}, Pred: {predicted_labels[i]}")
-#
-#             for ax in axes[len(incorrect_images):]:
-#                 ax.axis('off')
-#
-#             plt.tight_layout()
-#             plt.show()
-
-
 if __name__ == '__main__':
     main_train_test()
-    # main_train_test_error()
