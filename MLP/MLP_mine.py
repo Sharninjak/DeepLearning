@@ -49,7 +49,7 @@ train_loader = DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=1000, shuffle=False)
 
 
-# 多层感知机模型定义
+# 多层感知机模型定义,继承Module
 class MLP(nn.Module):
     def __init__(self):
         super(MLP, self).__init__()
@@ -59,11 +59,6 @@ class MLP(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        """
-        定义前向传播过程
-        :param x:
-        :return:
-        """
         # 将输入张量 x 从 28x28 的二维形状展平为 784 的一维形状
         x = x.view(-1, 784)
         x = self.relu(self.fc1(x))
